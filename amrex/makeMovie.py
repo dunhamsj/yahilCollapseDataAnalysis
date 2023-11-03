@@ -9,10 +9,9 @@ import sys
 sys.path.append( '../' )
 
 from MakeDataFile import MakeDataFile, ReadHeader
+from setHomeDirectory import *
 
 #### ========== User Input ==========
-
-HOME = '/home/kkadoogan/'
 
 # ID to be used for naming purposes
 ID = 'YahilCollapse_XCFC'

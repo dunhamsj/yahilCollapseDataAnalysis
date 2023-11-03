@@ -9,6 +9,7 @@ sys.path.append( '../' )
 
 from UtilitiesModule import GetData, GetFileArray
 from MakeDataFile import MakeDataFile, ReadHeader
+from setHomeDirectory import *
 
 class MultiPanel:
 
@@ -42,7 +43,6 @@ if __name__ == '__main__':
   saveFig = False
   saveFigAs = 'fig.AdibaticCollapse_XCFC_MultiPanel.png'
 
-  HOME = '/home/kkadoogan/'
   plotFileDirectory \
     = HOME + 'Work/Codes/thornado/SandBox/AMReX/Applications/YahilCollapse_XCFC/'
 

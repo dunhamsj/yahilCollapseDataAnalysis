@@ -8,6 +8,7 @@ sys.path.append( '../' )
 
 from UtilitiesModule import GetFileArray
 from MakeDataFile import MakeDataFile, ReadHeader
+from setHomeDirectory import *
 
 class DensityDecadesAMReX:
 
@@ -97,8 +98,6 @@ class DensityDecadesAMReX:
 if __name__ == '__main__':
 
   ID = 'YahilCollapse_XCFC'
-
-  HOME = '/home/kkadoogan/'
 
   rootDir = HOME + 'Work/Codes/thornado/SandBox/AMReX/Applications/'
   plotFileDirectory = rootDir + 'YahilCollapse_XCFC/'
