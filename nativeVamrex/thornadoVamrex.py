@@ -40,9 +40,9 @@ figTitle = 'Yahil Collapse'
 plotfileBaseName = ID + '.plt'
 
 # Field to plot
-Field   = 'PF_D'
-FieldT  = 'PF_D'
-yScale  = 1.0e0
+Field   = 'PolytropicConstant'
+FieldT  = 'PolytropicConstant'
+yScale  = 6.0e27 / 7.0e9**1.30
 yScaleT = 1.0e0
 dataT = np.loadtxt( '{:}_native_{:}.dat'.format( rootName, FieldT ) )
 UseLogScale_Y = False
@@ -55,6 +55,11 @@ elif Field == 'PF_D':
   UseCustomLimits = True
   yMin = 1.0
   yMax = 1.0e15
+elif Field == 'PolytropicConstant':
+  UseLogScale_Y = False
+  UseCustomLimits = True
+  yMin = 1.0 - 1.0e-1
+  yMax = 1.0 + 1.0e-1
 else:
   yMin = dataT[1:,1:].min()
   yMax = dataT[1:,1:].max()
@@ -146,7 +151,7 @@ def InitializeFrame():
 
 def UpdateFrame( t ):
 
-    print('    {:}/{:}'.format( t, nSS ) )
+    print( '\r    {:}/{:}'.format( t+1, nSS ), end = '\r' )
 
     time_textA.set_text( r'$t_{{\mathrm{{amrex}}}}={:.16e}\ \mathrm{{ms}}$' \
                          .format( timeA[t] ) )

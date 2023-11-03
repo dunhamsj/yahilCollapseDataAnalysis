@@ -23,9 +23,9 @@ Problem = 'YahilCollapse'
 
 RunTime = 10.0 # seconds
 
-Fields           = [ 'PF_D' ]
-labels           = [ r'$\rho$' ]
-yScale           = [ 1.0 ]
+Fields           = [ 'PolytropicConstant' ]
+labels           = [ r'$K/K_{\mathrm{exact}}$' ]
+yScale           = [ 6.0e27 / 7.0e9**1.30 ]
 Dimension        = 'X1'
 SnapshotRange    = [0,1099]
 plotEvery        = 1
@@ -43,6 +43,11 @@ elif Fields[0] == 'PF_D':
   UseCustomLimits_Y = True
   yMin = 1.0
   yMax = 1.0e15
+elif Fields[0] == 'PolytropicConstant':
+  UseSemiLogYScale  = False
+  UseCustomLimits_Y = True
+  yMin = 1.0 - 1.0e-1
+  yMax = 1.0 + 1.0e-1
 
 figTitle = 'Yahil Collapse'
 
@@ -151,11 +156,15 @@ else:
 
 def computeCellAverage( Names, nNodes, iFd, nSS ):
 
-  SqrtGm = Names['GF_Sg'][1][:,0,0,:]
+  SqrtGm = Names['GF_SqrtGm'][1][:,0,0,:]
 
   uK = np.empty( (nSS,nX1), np.float64 )
 
   for iSS in range( nSS ):
+
+    print( '\r  Computing cell average: {:}/{:}'.format( iSS+1, nSS ), \
+           end = '\r' )
+
     for iX1 in range( nX1 ):
 
       iLo = nNodes * iX1
@@ -163,11 +172,25 @@ def computeCellAverage( Names, nNodes, iFd, nSS ):
 
       vK = np.sum( wq * SqrtGm[iSS,iLo:iHi] )
 
-      uK[iSS,iX1] \
-        = np.sum( wq * YN[iFd][iSS,iLo:iHi] * SqrtGm[iSS,iLo:iHi] ) / vK
+      if Fields[iFd] == 'PolytropicConstant':
+
+        p   = np.sum( wq * Names['AF_P' ][1][iSS,0,0,iLo:iHi] \
+                             * SqrtGm[iSS,iLo:iHi] ) / vK
+        rho = np.sum( wq * Names['PF_D' ][1][iSS,0,0,iLo:iHi] \
+                             * SqrtGm[iSS,iLo:iHi] ) / vK
+        Gmm = np.sum( wq * Names['AF_Gm'][1][iSS,0,0,iLo:iHi] \
+                             * SqrtGm[iSS,iLo:iHi] ) / vK
+
+        uK[iSS,iX1] = p / rho**Gmm / yScale
+
+      else:
+
+        uK[iSS,iX1] \
+          = np.sum( wq * YN[iFd][iSS,iLo:iHi] * SqrtGm[iSS,iLo:iHi] ) / vK
 
   return uK
 
+print()
 YK = np.empty( nFields, object )
 for iFd in range( nFields ):
   YK[iFd] = computeCellAverage( Names, nNodes, iFd, nSS )
@@ -214,7 +237,7 @@ def InitializeFrame():
 # Animation function
 def UpdateFrame(t):
 
-  print( '  {:}/{:}'.format( t+1, nSS ) )
+  print( '\r          Updating frame: {:}/{:}'.format( t+1, nSS ), end = '\r' )
 
   ret = []
 
@@ -232,6 +255,7 @@ def UpdateFrame(t):
 
   return ret
 
+print()
 # Call the animator
 anim = animation.FuncAnimation \
          ( fig, \
@@ -242,6 +266,7 @@ anim = animation.FuncAnimation \
            blit      = True )
 
 anim.save( SaveFileAs, fps = max( 1, int( nSS / RunTime ) ), dpi = 300 )
+print()
 
 os.system( 'rm -f *.pyc' )
 os.system( 'rm -rf __pycache__' )
