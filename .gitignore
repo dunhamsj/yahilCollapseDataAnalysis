@@ -1,5 +1,9 @@
 amrex/densityDecades.txt
 amrex/.Yahil*
-nativeVamrex/.Yahil*
-__pycache__
 amrex/*mp4
+
+nativeVamrex/.Yahil*
+nativeVamrex/*.mp4
+nativeVamrex/*.dat
+
+__pycache__
