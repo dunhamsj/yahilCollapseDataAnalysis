@@ -61,7 +61,7 @@ PathToData = RootPath + suffix + Problem
 tmp = Fields[0]
 for iFd in range( 1, nFields ):
     tmp += '_' + Fields[iFd]
-SaveFileAs = 'mov.{:}_{:}_notdiff.mp4'.format( Problem, tmp )
+SaveFileAs = 'mov.{:}_XCFC_{:}_native.mp4'.format( Problem, tmp )
 
 Names = ReadFieldsHDF \
           ( PathToData, Snapshots, \

@@ -45,25 +45,20 @@ yScaleT = 1.0e0
 dataT = np.loadtxt( '{:}_native_{:}.dat'.format( rootName, FieldT ) )
 UseLogScale_Y = False
 if Field == 'PF_V1':
+  UseCustomLimits = True
   yMin = -0.15
   yMax = 0.01
 elif Field == 'PF_D':
   UseLogScale_Y = True
+  UseCustomLimits = True
   yMin = 1.0
   yMax = 1.0e15
 else:
   yMin = dataT[1:,1:].min()
   yMax = dataT[1:,1:].max()
 
-# Plot data in log10-scale?
-UseLogScale_Y = True
-UseLogScale_X = True
-
-# Unit system of the data
-UsePhysicalUnits = True
-
-# Coordinate system (currently supports 'cartesian' and 'spherical' )
-CoordinateSystem = 'spherical'
+xL  = 1.0
+xH  = 2.0e5
 
 # Only use every <plotEvery> plotfile
 plotEvery = 1
@@ -83,34 +78,27 @@ PlotMesh = True
 
 Verbose = True
 
-UseCustomLimits = False
-vmin = 0.0
-vmax = 2.0
+vmin = +np.inf
+vmax = -np.inf
 
 MovieRunTime = 10.0 # seconds
 
 #### ====== End of User Input =======
 
 DataDirectory = '.{:s}_movieData'.format( ID )
-MovieName     = 'mov.{:s}_{:s}.mp4'.format( ID, Field )
+MovieName     = 'mov.{:s}_{:s}_nativeVamrex.mp4'.format( ID, Field )
 
 # Append "/" if not present
 if not plotfileDirectory[-1] == '/': plotfileDirectory += '/'
 if not DataDirectory    [-1] == '/': DataDirectory     += '/'
 
-TimeUnits = ''
-X1Units   = ''
-if UsePhysicalUnits:
-    TimeUnits = 'ms'
-    X1Units   = 'km'
-
 plotfileArray \
   = MakeDataFile( Field, plotfileDirectory, DataDirectory, \
-                  plotfileBaseName, CoordinateSystem, \
+                  plotfileBaseName, 'spherical', \
                   SSi = SSi, SSf = SSf, nSS = nSS, \
                   forceChoiceD = False, owD = False, \
                   forceChoiceF = False, owF = False, \
-                  UsePhysicalUnits = UsePhysicalUnits, \
+                  UsePhysicalUnits = True, \
                   MaxLevel = MaxLevel, Verbose = Verbose )
 plotfileArray = np.copy( plotfileArray[::plotEvery] )
 
@@ -134,26 +122,11 @@ for t in range( nSS ):
     timeA[t] = np.loadtxt( TimeFile )
     dataA[t] = np.loadtxt( DataFile ).flatten()
 
-vmin = min( dataA.min(), dataT.min() )
-vmax = max( dataA.max(), dataT.max() )
-
-dX1 = X1_C[1] - X1_C[0]
-xL  = X1_C[0 ] - 0.5 * dX1
-xH  = X1_C[-1] + 0.5 * dX1
-
 fig, ax = plt.subplots( 1, 1 )
 ax.set_title( r'$\texttt{{{:}}}$'.format( ID ), fontsize = 15 )
 
 time_textA = ax.text( 0.1, 0.9, '', transform = ax.transAxes, fontsize = 13 )
 time_textT = ax.text( 0.1, 0.8, '', transform = ax.transAxes, fontsize = 13 )
-
-ax.set_xlabel( r'$x/\mathrm{km}$', fontsize = 15 )
-
-ax.set_xlim( xL + 0.25 * dX1, xH + 1.0e5 )
-ax.set_ylim( yMin, yMax )
-
-ax.set_xscale( 'log' )
-if UseLogScale_Y: ax.set_yscale( 'log' )
 
 lineA, = ax.plot( [],[], 'k-', lw = 2, label = r'$u_{\mathrm{amrex}}$' )
 lineT, = ax.plot( [],[], 'r-', lw = 1, label = r'$u_{\mathrm{thrnd}}$' )
@@ -191,6 +164,18 @@ anim = animation.FuncAnimation( fig, UpdateFrame, \
                                 init_func = InitializeFrame, \
                                 frames = nSS, \
                                 blit = True )
+
+if not UseCustomLimits:
+  yMin = min( dataA.min(), dataT.min() )
+  yMax = max( dataA.max(), dataT.max() )
+
+ax.set_xlabel( r'$x/\mathrm{km}$', fontsize = 15 )
+
+ax.set_xlim( xL, xH )
+ax.set_ylim( yMin, yMax )
+
+ax.set_xscale( 'log' )
+if UseLogScale_Y: ax.set_yscale( 'log' )
 
 fps = max( 1, nSS / MovieRunTime )
 
