@@ -249,6 +249,8 @@ def ReadFieldsHDF( PathToData, Snapshots, CoordinateSystem, \
 
     for i in range( nFiles ):
 
+        print( '\r         Generating data: {:}/{:}'.format( i+1, nFiles ), end = '\r' )
+
         TimeSteps[i] = str( Snapshots[i] ).zfill( 6 )
 
         DataFileNames_Fluid[i] = FF_root + str( TimeSteps[i] ) + '.h5'
@@ -361,19 +363,19 @@ def ReadFieldsHDF( PathToData, Snapshots, CoordinateSystem, \
       'AF_Cs'              : [ VelocityX1Unit        , AF_Cs    ], \
       'AF_Gm'              : [ ''                    , AF_Gm    ], \
       'AF_Ye'              : [ ''                    , AF_Ye    ], \
-      'GF_CF'              : [ ''                    , GF_CF    ], \
-      'GF_al'              : [ ''                    , GF_al    ], \
-      'GF_NP'              : [ ''                    , GF_NP    ], \
-      'GF_b1'              : [ VelocityX1Unit        , GF_b1    ], \
-      'GF_b2'              : [ VelocityX2Unit        , GF_b2    ], \
-      'GF_b2'              : [ VelocityX3Unit        , GF_b3    ], \
-      'GF_g1'              : [ Gm11Unit              , GF_g1    ], \
-      'GF_g2'              : [ Gm22Unit              , GF_g2    ], \
-      'GF_g3'              : [ Gm33Unit              , GF_g3    ], \
-      'GF_h1'              : [ h1Unit                , GF_h1    ], \
-      'GF_h2'              : [ h2Unit                , GF_h2    ], \
-      'GF_h3'              : [ h3Unit                , GF_h3    ], \
-      'GF_Sg'              : [ SqrtGmUnit            , GF_Sg    ], \
+      'GF_Psi'             : [ ''                    , GF_CF    ], \
+      'GF_Alpha'           : [ ''                    , GF_al    ], \
+      'GF_Phi_N'           : [ ''                    , GF_NP    ], \
+      'GF_Beta_1'          : [ VelocityX1Unit        , GF_b1    ], \
+      'GF_Beta_2'          : [ VelocityX2Unit        , GF_b2    ], \
+      'GF_Beta_2'          : [ VelocityX3Unit        , GF_b3    ], \
+      'GF_Gm_11'           : [ Gm11Unit              , GF_g1    ], \
+      'GF_Gm_22'           : [ Gm22Unit              , GF_g2    ], \
+      'GF_Gm_33'           : [ Gm33Unit              , GF_g3    ], \
+      'GF_h_1'             : [ h1Unit                , GF_h1    ], \
+      'GF_h_2'             : [ h2Unit                , GF_h2    ], \
+      'GF_h_3'             : [ h3Unit                , GF_h3    ], \
+      'GF_SqrtGm'          : [ SqrtGmUnit            , GF_Sg    ], \
       'DF_TCI'             : [ ''                    , DF_TCI   ], \
       'DF_Sh_X1'           : [ ''                    , DF_Sh_X1 ], \
       'DF_Sh_X2'           : [ ''                    , DF_Sh_X2 ], \
