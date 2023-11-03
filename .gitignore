@@ -1,6 +1,9 @@
 amrex/densityDecades.txt
 amrex/.Yahil*
-amrex/*mp4
+amrex/*.mp4
+
+native/densityDecades.txt
+native/*.mp4
 
 nativeVamrex/.Yahil*
 nativeVamrex/*.mp4
