@@ -34,6 +34,8 @@ plotfileDirectory \
   = HOME + 'Work/Codes/thornado/\
 SandBox/AMReX/Applications/YahilCollapse_XCFC/'
 
+figTitle = 'Yahil Collapse'
+
 # plotfile base name (e.g., Advection1D.plt######## -> Advection1D.plt )
 plotfileBaseName = ID + '.plt'
 
@@ -123,7 +125,7 @@ for t in range( nSS ):
     dataA[t] = np.loadtxt( DataFile ).flatten()
 
 fig, ax = plt.subplots( 1, 1 )
-ax.set_title( r'$\texttt{{{:}}}$'.format( ID ), fontsize = 15 )
+ax.set_title( '{:}'.format( figTitle ), fontsize = 15 )
 
 time_textA = ax.text( 0.1, 0.9, '', transform = ax.transAxes, fontsize = 13 )
 time_textT = ax.text( 0.1, 0.8, '', transform = ax.transAxes, fontsize = 13 )

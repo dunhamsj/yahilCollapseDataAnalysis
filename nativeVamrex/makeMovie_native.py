@@ -27,22 +27,24 @@ Fields           = [ 'PF_D' ]
 labels           = [ r'$\rho$' ]
 yScale           = [ 1.0 ]
 Dimension        = 'X1'
-UseSemiLogYScale = True
 SnapshotRange    = [0,1099]
 plotEvery        = 1
 WriteFile        = True
 
+UseSemiLogYScale  = False
 UseCustomLimits_Y = False
+
 if Fields[0] == 'PF_V1':
   UseCustomLimits_Y = True
   yMin = -0.15
   yMax = 0.01
 elif Fields[0] == 'PF_D':
+  UseSemiLogYScale  = True
   UseCustomLimits_Y = True
   yMin = 1.0
   yMax = 1.0e15
 
-FigTitle = Problem
+figTitle = 'Yahil Collapse'
 
 ############################
 
@@ -97,7 +99,7 @@ ylim = [ yMin, yMax ]
 # Animation program adapted from
 # https://jakevdp.github.io/blog/2012/08/18/matplotlib-animation-tutorial/
 fig, ax = plt.subplots( 1, 1 )
-ax.set_title( r'$\texttt{{{:}}}$'.format( FigTitle ) )
+ax.set_title( '{:}'.format( figTitle ) )
 
 time_text = plt.text( 0.1, 0.8, '', transform = ax.transAxes )
 
