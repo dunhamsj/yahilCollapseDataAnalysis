@@ -9,7 +9,7 @@ import sys
 sys.path.append( '../' )
 
 from MakeDataFile import MakeDataFile, ReadHeader
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 """
 
@@ -34,7 +34,7 @@ plotfileDirectory \
   = HOME + 'Work/Codes/thornado/\
 SandBox/AMReX/Applications/YahilCollapse_XCFC/'
 
-figTitle = 'Yahil Collapse'
+figTitle = 'Yahil Collapse (8192 elements)'
 
 # plotfile base name (e.g., Advection1D.plt######## -> Advection1D.plt )
 plotfileBaseName = ID + '.plt'
@@ -45,27 +45,28 @@ FieldT  = 'PolytropicConstant'
 yScale  = 6.0e27 / 7.0e9**1.30
 yScaleT = 1.0e0
 dataT = np.loadtxt( '{:}_native_{:}.dat'.format( rootName, FieldT ) )
-UseLogScale_Y = False
+
+yLabel = r'$K/K_{\mathrm{exact}}$'
+
+UseLogScale_Y   = False
+UseCustomLimits = False
+
 if Field == 'PF_V1':
   UseCustomLimits = True
   yMin = -0.15
   yMax = 0.01
 elif Field == 'PF_D':
-  UseLogScale_Y = True
+  UseLogScale_Y   = True
   UseCustomLimits = True
   yMin = 1.0
   yMax = 1.0e15
 elif Field == 'PolytropicConstant':
-  UseLogScale_Y = False
   UseCustomLimits = True
   yMin = 1.0 - 1.0e-1
   yMax = 1.0 + 1.0e-1
 else:
   yMin = dataT[1:,1:].min()
   yMax = dataT[1:,1:].max()
-
-xL  = 1.0
-xH  = 2.0e5
 
 # Only use every <plotEvery> plotfile
 plotEvery = 1
@@ -151,7 +152,7 @@ def InitializeFrame():
 
 def UpdateFrame( t ):
 
-    print( '\r    {:}/{:}'.format( t+1, nSS ), end = '\r' )
+    print( '\r    Updating frame {:}/{:}'.format( t+1, nSS ), end = '\r' )
 
     time_textA.set_text( r'$t_{{\mathrm{{amrex}}}}={:.16e}\ \mathrm{{ms}}$' \
                          .format( timeA[t] ) )
@@ -177,6 +178,7 @@ if not UseCustomLimits:
   yMax = max( dataA.max(), dataT.max() )
 
 ax.set_xlabel( r'$x/\mathrm{km}$', fontsize = 15 )
+ax.set_ylabel( yLabel, fontsize = 15 )
 
 ax.set_xlim( xL, xH )
 ax.set_ylim( yMin, yMax )
@@ -189,6 +191,7 @@ fps = max( 1, nSS / MovieRunTime )
 print( '\n  Making movie' )
 print( '  ------------' )
 anim.save( MovieName, fps = fps, dpi = 300 )
+print()
 
 import os
 os.system( 'rm -rf __pycache__ ' )

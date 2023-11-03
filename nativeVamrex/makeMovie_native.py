@@ -10,7 +10,7 @@ import sys
 sys.path.append( '../' )
 
 from UtilitiesModuleHDF import ReadFieldsHDF
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 ############################ User Input ############################
 
@@ -49,7 +49,7 @@ elif Fields[0] == 'PolytropicConstant':
   yMin = 1.0 - 1.0e-1
   yMax = 1.0 + 1.0e-1
 
-figTitle = 'Yahil Collapse'
+figTitle = 'Yahil Collapse (8192) elements'
 
 ############################
 
@@ -80,8 +80,7 @@ Time     = Names['Time'][1]
 
 XC   = np.array( Names['X1_C'][1] )
 dX   = np.diff( XC )
-xlim = [ 1.0, 2.0e5 ]
-#xlim = [ XC.min() - 0.25 * dX[0], 2.0e5 ]
+xlim = [ xL, xH ]
 
 YN = np.empty( nFields, object )
 

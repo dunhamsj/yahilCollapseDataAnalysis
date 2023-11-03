@@ -10,7 +10,7 @@ import sys
 sys.path.append( '../' )
 
 from UtilitiesModuleHDF import ReadFieldsHDF
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 ############################ User Input ############################
 
@@ -67,8 +67,7 @@ Time     = Names['Time'][1]
 
 XC   = np.array( Names['X1_C'][1] )
 dX   = np.diff( XC )
-xlim = [ 1.0, 2.0e5 ]
-#xlim = [ XC.min() - 0.25 * dX[0], 2.0e5 ]
+xlim = [ xL, xH ]
 
 YN = np.empty( nFields, object )
 

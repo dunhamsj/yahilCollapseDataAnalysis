@@ -9,7 +9,7 @@ import sys
 sys.path.append( '../' )
 
 from MakeDataFile import MakeDataFile, ReadHeader
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 #### ========== User Input ==========
 
@@ -30,9 +30,6 @@ Field   = 'PF_D'
 yScale  = 1.0e0
 yLabel  = r'$\rho\,\left[\mathrm{g\,cm}^{-3}\right]$'
 UseLogScale_Y = True
-
-xL  = 1.0
-xH  = 2.0e5
 
 # Only use every <plotEvery> plotFile
 plotEvery = 10

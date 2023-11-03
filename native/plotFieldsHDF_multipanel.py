@@ -16,7 +16,7 @@ import sys
 sys.path.append( '../' )
 
 from UtilitiesModuleHDF import ReadFieldsHDF
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 THORNADO_DIR = HOME + 'Work/Codes/thornado/'
 
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         for iF in range( nRows ):
 
             axs[iF].set_xscale( 'log' )
-            axs[iF].set_xlim( 1.0, 2.0e5 )
+            axs[iF].set_xlim( xL, xH )
             axs[iF].tick_params( axis = 'both', labelsize = 14 )
             if iF < nRows-1: axs[iF].xaxis.set_ticklabels([])
             axs[iF].grid()
@@ -212,7 +212,7 @@ if __name__ == '__main__':
         for iF in range( nRows ):
 
             axs[iF].set_xscale( 'log' )
-            axs[iF].set_xlim( 1.0, 2.0e5 )
+            axs[iF].set_xlim( xL, xH )
 
         axs[1].set_ylabel( Fields[2] + ' ' + Plot.names[Fields[2]][0] )
         axs[1].set_ylabel( r'$\beta^{1}\,\left[\mathrm{km\ s}^{-1}\right]$' )

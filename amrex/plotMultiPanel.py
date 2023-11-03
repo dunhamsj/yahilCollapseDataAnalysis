@@ -9,7 +9,7 @@ sys.path.append( '../' )
 
 from UtilitiesModule import GetData, GetFileArray
 from MakeDataFile import MakeDataFile, ReadHeader
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 class MultiPanel:
 
@@ -29,14 +29,14 @@ class MultiPanel:
 
     for iSS in range( self.snapShots.shape[0] ):
 
-      Data, DataUnit, X1, X2, X3, dX1, dX2, dX3, xL, xU, nX, Time \
+      Data, DataUnit, X1, X2, X3, dX1, dX2, dX3, xl, xh nX, Time \
         = GetData( self.plotFileDirectory, self.plotFileBaseName, Field, \
                    'spherical', True, \
                    argv = ['x',str( plotFileArray[self.snapShots[iSS]] )], \
                    MaxLevel = -1, \
                    ReturnTime = True, ReturnMesh = True, Verbose = False )
 
-    return Data[:,0,0], DataUnit, X1[:,0,0], dX1[:,0,0], xL, xU, Time
+    return Data[:,0,0], DataUnit, X1[:,0,0], dX1[:,0,0], xl, xh Time
 
 if __name__ == '__main__':
 
@@ -50,18 +50,18 @@ if __name__ == '__main__':
     = MultiPanel \
         ( plotFileDirectory, snapShots = np.array( [ 0 ], np.int64 ) )
 
-  PF_D , unit_PF_D , X1, dX1, xL, xU, Time = MP.GetData( 'PF_D'      )
-  GF_b1, unit_GF_b1, X1, dX1, xL, xU, Time = MP.GetData( 'GF_Beta_1' )
-  PF_V1, unit_PF_V1, X1, dX1, xL, xU, Time = MP.GetData( 'PF_V1'     )
-  AF_P , unit_AF_P , X1, dX1, xL, xU, Time = MP.GetData( 'AF_P'      )
-  GF_CF, unit_GF_CF, X1, dX1, xL, xU, Time = MP.GetData( 'GF_Psi'    )
-  GF_Al, unit_GF_Al, X1, dX1, xL, xU, Time = MP.GetData( 'GF_Alpha'  )
+  PF_D , unit_PF_D , X1, dX1, xl, xh Time = MP.GetData( 'PF_D'      )
+  GF_b1, unit_GF_b1, X1, dX1, xl, xh Time = MP.GetData( 'GF_Beta_1' )
+  PF_V1, unit_PF_V1, X1, dX1, xl, xh Time = MP.GetData( 'PF_V1'     )
+  AF_P , unit_AF_P , X1, dX1, xl, xh Time = MP.GetData( 'AF_P'      )
+  GF_CF, unit_GF_CF, X1, dX1, xl, xh Time = MP.GetData( 'GF_Psi'    )
+  GF_Al, unit_GF_Al, X1, dX1, xl, xh Time = MP.GetData( 'GF_Alpha'  )
 
   fig, axs = plt.subplots( 2, 2, figsize = ( 12,9 ) )
 
   for i in range( 2 ):
     for j in range( 2 ):
-      axs[i,j].set_xlim( 1.0, 2.0e5 )
+      axs[i,j].set_xlim( xL, xH )
       axs[i,j].set_xscale( 'log')
       axs[i,j].grid()
       axs[i,j].set_xlabel( 'Radial Coordinate [km]' )
@@ -79,12 +79,12 @@ if __name__ == '__main__':
     = MultiPanel \
         ( plotFileDirectory, snapShots = np.array( [ -1 ], np.int64 ) )
 
-  PF_D , unit_PF_D , X1, dX1, xL, xU, Time = MP.GetData( 'PF_D'      )
-  GF_b1, unit_GF_b1, X1, dX1, xL, xU, Time = MP.GetData( 'GF_Beta_1' )
-  PF_V1, unit_PF_V1, X1, dX1, xL, xU, Time = MP.GetData( 'PF_V1'     )
-  AF_P , unit_AF_P , X1, dX1, xL, xU, Time = MP.GetData( 'AF_P'      )
-  GF_CF, unit_GF_CF, X1, dX1, xL, xU, Time = MP.GetData( 'GF_Psi'    )
-  GF_Al, unit_GF_Al, X1, dX1, xL, xU, Time = MP.GetData( 'GF_Alpha'  )
+  PF_D , unit_PF_D , X1, dX1, xl, xh Time = MP.GetData( 'PF_D'      )
+  GF_b1, unit_GF_b1, X1, dX1, xl, xh Time = MP.GetData( 'GF_Beta_1' )
+  PF_V1, unit_PF_V1, X1, dX1, xl, xh Time = MP.GetData( 'PF_V1'     )
+  AF_P , unit_AF_P , X1, dX1, xl, xh Time = MP.GetData( 'AF_P'      )
+  GF_CF, unit_GF_CF, X1, dX1, xl, xh Time = MP.GetData( 'GF_Psi'    )
+  GF_Al, unit_GF_Al, X1, dX1, xl, xh Time = MP.GetData( 'GF_Alpha'  )
 
   axs[0,0].semilogy( X1, PF_D, 'r-', label = 'Time = {:.3e} ms'.format( Time ) )
   axs[0,0].legend()

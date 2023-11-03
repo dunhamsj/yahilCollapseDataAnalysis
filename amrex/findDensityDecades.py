@@ -8,7 +8,7 @@ sys.path.append( '../' )
 
 from UtilitiesModule import GetFileArray
 from MakeDataFile import MakeDataFile, ReadHeader
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 class DensityDecadesAMReX:
 

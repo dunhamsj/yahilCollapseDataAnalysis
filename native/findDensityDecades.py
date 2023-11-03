@@ -7,7 +7,7 @@ import sys
 sys.path.append( '../' )
 
 from UtilitiesModuleHDF import ReadFieldsHDF
-from setHomeDirectory import *
+from setGlobalVariables import *
 
 class DensityDecades:
 
