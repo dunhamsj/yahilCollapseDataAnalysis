@@ -64,7 +64,7 @@ if __name__ == '__main__':
       axs[i,j].set_xlim( xL, xH )
       axs[i,j].set_xscale( 'log')
       axs[i,j].grid()
-      axs[i,j].set_xlabel( 'Radial Coordinate [km]' )
+      axs[i,j].set_xlabel( xLabel )
 
   axs[0,0].semilogy( X1, PF_D, 'b-', label = 'Time = {:.3e} ms'.format( Time ) )
   axs[0,0].set_ylabel( 'PF_D ' )

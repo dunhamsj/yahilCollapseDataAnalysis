@@ -40,13 +40,13 @@ figTitle = 'Yahil Collapse (8192 elements)'
 plotfileBaseName = ID + '.plt'
 
 # Field to plot
-Field   = 'PolytropicConstant'
-FieldT  = 'PolytropicConstant'
-yScale  = 6.0e27 / 7.0e9**1.30
+Field   = 'PF_D'
+FieldT  = 'PF_D'
+yScale  = 1.0e0
 yScaleT = 1.0e0
 dataT = np.loadtxt( '{:}_native_{:}.dat'.format( rootName, FieldT ) )
 
-yLabel = r'$K/K_{\mathrm{exact}}$'
+yLabel = r'$\rho\ \left[\mathrm{g\,cm}^{-3}\right]$'
 
 UseLogScale_Y   = False
 UseCustomLimits = False
@@ -177,8 +177,8 @@ if not UseCustomLimits:
   yMin = min( dataA.min(), dataT.min() )
   yMax = max( dataA.max(), dataT.max() )
 
-ax.set_xlabel( r'$x/\mathrm{km}$', fontsize = 15 )
-ax.set_ylabel( yLabel, fontsize = 15 )
+ax.set_xlabel( xLabel )
+ax.set_ylabel( yLabel )
 
 ax.set_xlim( xL, xH )
 ax.set_ylim( yMin, yMax )

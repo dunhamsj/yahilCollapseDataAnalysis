@@ -156,7 +156,7 @@ if __name__ == '__main__':
         axs[2].set_ylabel( r'$p\,\left[\mathrm{erg\ cm}^{-3}\right]$' )
 
         axs[0].legend( prop = {'size':10} )
-        axs[-1].set_xlabel( 'Radial Coordinate [km]' )
+        axs[-1].set_xlabel( xLabel )
 
         plt.subplots_adjust( hspace = 0.0 )
 
@@ -223,7 +223,7 @@ if __name__ == '__main__':
 
         axs[0].legend()
         axs[1].legend()
-        axs[-1].set_xlabel( 'Radial Coordinate [km]' )
+        axs[-1].set_xlabel( xLabel )
 
         plt.subplots_adjust( hspace = 0.0 )
 

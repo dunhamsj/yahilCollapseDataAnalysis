@@ -117,7 +117,7 @@ ax.semilogx( rC, rhoK1 / yScale, '.' )
 if useLogYScale:
     ax.set_yscale( 'log' )
 
-ax.set_xlabel( r'$r/\mathrm{km}$' )
+ax.set_xlabel( xLabel )
 ax.set_ylabel( yLabel )
 
 if len( ylim ) > 0 :

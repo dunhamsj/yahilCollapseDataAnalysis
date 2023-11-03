@@ -139,7 +139,7 @@ ax.set_title( r'$\texttt{{{:}}}$'.format( ID ), fontsize = 15 )
 ax.set_xscale( 'log' )
 if UseLogScale_Y: ax.set_yscale( 'log' )
 
-ax.set_xlabel( r'$r\ \left[\mathrm{km}\right]$' )
+ax.set_xlabel( xLabel )
 ax.set_ylabel( yLabel )
 
 ax.set_xlim( xL, xH )

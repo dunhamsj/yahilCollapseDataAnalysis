@@ -96,7 +96,7 @@ time_text = plt.text( 0.1, 0.8, '', transform = ax.transAxes )
 
 ax.set_xlim( xlim )
 ax.set_xscale( 'log' )
-ax.set_xlabel( r'$r\ \left[\mathrm{km}\right]$' )
+ax.set_xlabel( xLabel )
 
 ax.xaxis.set_tick_params \
   ( which = 'both', top = True, left = False, bottom = True, right = False  )

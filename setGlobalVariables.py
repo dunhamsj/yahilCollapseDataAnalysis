@@ -5,3 +5,5 @@ HOME = '/home/kkadoogan/'
 
 xL = 1.0
 xH = 2.0e5
+
+xLabel = r'$r\ \left[\mathrm{km}\right]$'
