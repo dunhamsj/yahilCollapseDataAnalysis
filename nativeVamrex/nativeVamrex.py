@@ -34,47 +34,67 @@ plotfileDirectory \
   = HOME + 'Work/Codes/thornado/\
 SandBox/AMReX/Applications/YahilCollapse_XCFC/'
 
-figTitle = 'Yahil Collapse (8192 elements)'
+figTitle = 'Yahil Collapse, 4096 elements, slT, plT'
 
 # plotfile base name (e.g., Advection1D.plt######## -> Advection1D.plt )
 plotfileBaseName = ID + '.plt'
 
 # Field to plot
-Field   = 'PF_D'
-FieldT  = 'PF_D'
-yScale  = 1.0e0
-yScaleT = 1.0e0
+Field  = 'PF_V1'
+FieldT = 'PF_V1'
 dataT = np.loadtxt( '{:}_native_{:}.dat'.format( rootName, FieldT ) )
 
-yLabel = r'$\rho\ \left[\mathrm{g\,cm}^{-3}\right]$'
+if   Field == 'PF_V1':
 
-UseLogScale_Y   = False
-UseCustomLimits = False
+  UseCustomLimits = False
+  UseLogScale_Y   = False
+  yScale  = 2.99792458e5
+  yLabel0 = r'$v/c$'
+  yLabel1 = r'$\left|v_{\mathrm{a}}-v_{\mathrm{t}}\right|/$' \
+              + r'\frac{1}{2}\left|v_{\mathrm{a}}+v_{\mathrm{t}}\right|$'
 
-if Field == 'PF_V1':
-  UseCustomLimits = True
-  yMin = -0.15
-  yMax = 0.01
 elif Field == 'PF_D':
+
   UseLogScale_Y   = True
-  UseCustomLimits = True
-  yMin = 1.0
-  yMax = 1.0e15
+  UseCustomLimits = False#; yMin = 1.0; yMax = 1.0e15
+  yScale  = 1.0e0
+  yLabel0 = r'$\rho\,\left[\mathrm{g\,cm}^{-3}\right]$'
+  yLabel1 = r'$\left|\rho_{\mathrm{a}}-\rho_{\mathrm{t}}\right|/$' \
+              + r'\frac{1}{2}\left|\rho_{\mathrm{a}}+\rho_{\mathrm{t}}\right|$'
+
 elif Field == 'PolytropicConstant':
-  UseCustomLimits = True
-  yMin = 1.0 - 1.0e-1
-  yMax = 1.0 + 1.0e-1
+
+  UseLogScale_Y   = False
+  UseCustomLimits = False
+  yScale  = 6.0e27 / 7.0e9**1.30
+  yLabel0 = r'$K/K_{\mathrm{exact}}$'
+  yLabel1 = r'$\left|K_{\mathrm{a}}-K_{\mathrm{t}}\right|/$' \
+              + r'\frac{1}{2}\left|K_{\mathrm{a}}+K_{\mathrm{t}}\right|$'
+
+elif Field == 'AF_P':
+
+  UseLogScale_Y   = True
+  UseCustomLimits = False
+  yScale  = 1.0e0
+  yLabel0 = r'$p\ \left[\mathrm{erg\,cm}^{-3}\right]$'
+  yLabel1 = r'$\left|p_{\mathrm{a}}-p_{\mathrm{t}}\right|/$' \
+              + r'\frac{1}{2}\left|p_{\mathrm{a}}+p_{\mathrm{t}}\right|$'
+
 else:
-  yMin = dataT[1:,1:].min()
-  yMax = dataT[1:,1:].max()
+
+  UseLogScale_Y   = False
+  UseCustomLimits = False
+  yScale  = 1.0e0
+  yLabel0 = ''
+  yLabel1 = ''
 
 # Only use every <plotEvery> plotfile
 plotEvery = 1
 
 # First and last snapshots and number of snapshots to include in movie
-SSi = -1 # -1 -> SSi = 0
-SSf = -1 # -1 -> plotfileArray.shape[0] - 1
-nSS = -1 # -1 -> plotfileArray.shape[0]
+SSi = -1#-1 -> SSi = 0
+SSf = -1#-1 -> plotfileArray.shape[0] - 1
+nSS = -1#-1 -> plotfileArray.shape[0]
 
 # Max level of refinement to include
 MaxLevel = -1
@@ -108,9 +128,12 @@ plotfileArray \
                   forceChoiceF = False, owF = False, \
                   UsePhysicalUnits = True, \
                   MaxLevel = MaxLevel, Verbose = Verbose )
-plotfileArray = np.copy( plotfileArray[::plotEvery] )
+if nSS < 0:
+  plotfileArray = np.copy( plotfileArray[::plotEvery] )
+else:
+  plotfileArray = np.copy( plotfileArray[SSi:SSf+1:plotEvery] )
 
-if nSS < 0: nSS = plotfileArray.shape[0]
+nSS = plotfileArray.shape[0]
 
 X1_C = np.copy( dataT[0,1:] )
 nX   = np.shape( X1_C )[0]
@@ -119,34 +142,50 @@ timeT = np.copy( dataT[1::plotEvery,0 ] )
 dataT = np.copy( dataT[1::plotEvery,1:] )
 timeA = np.empty( timeT.shape, np.float64 )
 dataA = np.empty( dataT.shape, np.float64 )
+dataD = np.empty( dataT.shape, np.float64 )
 
-for t in range( nSS ):
+print()
+print( '  Computing relative difference array' )
+for iSS in range( nSS ):
 
-    FileDirectory = DataDirectory + plotfileArray[t] + '/'
+    FileDirectory = DataDirectory + plotfileArray[iSS] + '/'
 
     TimeFile = FileDirectory + '{:}.dat'.format( 'Time' )
     DataFile = FileDirectory + '{:}.dat'.format( Field )
 
-    timeA[t] = np.loadtxt( TimeFile )
-    dataA[t] = np.loadtxt( DataFile ).flatten()
+    timeA[iSS] = np.loadtxt( TimeFile )
+    dataA[iSS] = np.loadtxt( DataFile ).flatten()
 
-fig, ax = plt.subplots( 1, 1 )
-ax.set_title( '{:}'.format( figTitle ), fontsize = 15 )
+    for iX1 in range( nX ):
+        print( '\r  iSS: {:}/{:}'.format( iSS, nSS ), end = '\r' )
+        dataD[iSS,iX1] \
+          = max( np.abs( dataA[iSS,iX1] - dataT[iSS,iX1] ) \
+                   / ( 0.5 * np.abs( dataA[iSS,iX1] + dataT[iSS,iX1] ) ), \
+                 1.0e-17 )
+print()
+print(dataD.min(), dataD.max() )
 
-time_textA = ax.text( 0.1, 0.9, '', transform = ax.transAxes, fontsize = 13 )
-time_textT = ax.text( 0.1, 0.8, '', transform = ax.transAxes, fontsize = 13 )
+fig, axs = plt.subplots( 2, 1 )
+fig.suptitle( '{:}'.format( figTitle ), fontsize = 15 )
 
-lineA, = ax.plot( [],[], 'k-', lw = 2, label = r'$u_{\mathrm{amrex}}$' )
-lineT, = ax.plot( [],[], 'r-', lw = 1, label = r'$u_{\mathrm{thrnd}}$' )
+time_textA \
+  = axs[0].text( 0.1, 0.9, '', transform = axs[0].transAxes, fontsize = 13 )
+time_textT \
+  = axs[0].text( 0.1, 0.8, '', transform = axs[0].transAxes, fontsize = 13 )
+
+lineA, = axs[0].plot( [],[], 'k-', lw = 2, label = r'$u_{\mathrm{amrex}}$' )
+lineT, = axs[0].plot( [],[], 'r-', lw = 1, label = r'$u_{\mathrm{thrnd}}$' )
+lineD, = axs[1].plot( [],[], 'k-', lw = 1 )
 
 def InitializeFrame():
 
     lineA.set_data([],[])
     lineT.set_data([],[])
+    lineD.set_data([],[])
     time_textA.set_text('')
     time_textT.set_text('')
 
-    ret = ( lineA, lineT, time_textA, time_textT )
+    ret = ( lineA, lineT, lineD, time_textA, time_textT )
 
     return ret
 
@@ -160,13 +199,14 @@ def UpdateFrame( t ):
                          .format( timeT[t] ) )
 
     lineA.set_data( X1_C, dataA[t] / yScale )
-    lineT.set_data( X1_C, dataT[t] / yScaleT )
+    lineT.set_data( X1_C, dataT[t] / yScale )
+    lineD.set_data( X1_C, dataD[t] )
 
-    ret = ( lineA, lineT, time_textA, time_textT )
+    ret = ( lineA, lineT, lineD, time_textA, time_textT )
 
     return ret
 
-ax.legend( loc = 3, prop = {'size':12} )
+axs[0].legend( loc = 3, prop = {'size':12} )
 
 anim = animation.FuncAnimation( fig, UpdateFrame, \
                                 init_func = InitializeFrame, \
@@ -174,17 +214,22 @@ anim = animation.FuncAnimation( fig, UpdateFrame, \
                                 blit = True )
 
 if not UseCustomLimits:
-  yMin = min( dataA.min(), dataT.min() )
-  yMax = max( dataA.max(), dataT.max() )
+  yMin = min( dataA.min(), dataT.min() ) / yScale
+  yMax = max( dataA.max(), dataT.max() ) / yScale
 
-ax.set_xlabel( xLabel )
-ax.set_ylabel( yLabel )
+axs[1].set_xlabel( xLabel )
+axs[0].set_ylabel( yLabel0 )
+#axs[1].set_ylabel( yLabel1 )
 
-ax.set_xlim( xL, xH )
-ax.set_ylim( yMin, yMax )
+axs[0].set_xlim( xL, xH )
+axs[1].set_xlim( xL, xH )
+axs[0].set_ylim( yMin, yMax )
+axs[1].set_ylim( 1.0e-17, dataD.max() )
 
-ax.set_xscale( 'log' )
-if UseLogScale_Y: ax.set_yscale( 'log' )
+axs[0].set_xscale( 'log' )
+axs[1].set_xscale( 'log' )
+if UseLogScale_Y: axs[0].set_yscale( 'log' )
+axs[1].set_yscale( 'log' )
 
 fps = max( 1, nSS / MovieRunTime )
 

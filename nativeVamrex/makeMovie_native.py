@@ -23,35 +23,57 @@ Problem = 'YahilCollapse'
 
 RunTime = 10.0 # seconds
 
-Fields           = [ 'PolytropicConstant' ]
-labels           = [ r'$K/K_{\mathrm{exact}}$' ]
-yScale           = [ 6.0e27 / 7.0e9**1.30 ]
+Fields           = [ 'PF_V1' ]
 Dimension        = 'X1'
-SnapshotRange    = [0,1099]
+SnapshotRange    = [0,625]
 plotEvery        = 1
 WriteFile        = True
 
-UseSemiLogYScale  = False
-UseCustomLimits_Y = False
-
 if Fields[0] == 'PF_V1':
-  UseCustomLimits_Y = True
-  yMin = -0.15
-  yMax = 0.01
-elif Fields[0] == 'PF_D':
-  UseSemiLogYScale  = True
-  UseCustomLimits_Y = True
-  yMin = 1.0
-  yMax = 1.0e15
-elif Fields[0] == 'PolytropicConstant':
-  UseSemiLogYScale  = False
-  UseCustomLimits_Y = True
-  yMin = 1.0 - 1.0e-1
-  yMax = 1.0 + 1.0e-1
 
-figTitle = 'Yahil Collapse (8192) elements'
+  UseCustomLimits_Y = False
+  UseLogScale_Y     = False
+  yScale = [ 2.99792458e5 ]
+  labels = [ r'$v/c$' ]
+
+elif Fields[0] == 'PF_D':
+
+  UseCustomLimits_Y = False#; yMin = 1.0; yMax = 1.0e15
+  UseLogScale_Y     = True
+  yScale = [ 1.0e0 ]
+  labels = [ r'$\rho\ \left[\mathrm{g\,cm}^{-3}\right]$' ]
+
+elif Fields[0] == 'PolytropicConstant':
+
+  UseCustomLimits_Y = True; yMin = 1.0 - 1.0e-4; yMax = 1.0 + 1.0e-4
+  UseLogScale_Y     = False
+  yScale = [ 6.0e27 / 7.0e9**1.30 ]
+  labels = [ r'$K/K_{\mathrm{exact}}$' ]
+
+elif Fields[0] == 'AF_P':
+
+  UseCustomLimits_Y = False
+  UseLogScale_Y     = True
+  yScale = [ 1.0 ]
+  labels = [ r'$p\ \left[\mathrm{erg\,cm}^{-3}\right]$' ]
+
+else:
+
+  UseCustomLimits_Y = False
+  UseLogScale_Y     = False
+  yScale = [ 1.0e0 ]
+  labels = Fields
+
+figTitle = 'Yahil Collapse, 8192 elements, plF, slF'
 
 ############################
+
+print( '\n  makeMovie_native.py' )
+print( '  -------------------' )
+print( '    plotfileDirectory: ', RootPath + suffix )
+print( '               Fields: ', Fields )
+print( '            WriteFile: ', WriteFile )
+print()
 
 nFields = len( Fields )
 
@@ -85,7 +107,7 @@ xlim = [ xL, xH ]
 YN = np.empty( nFields, object )
 
 for iFd in range( nFields ):
-  YN[iFd] = Names[Fields[iFd]][1][:,0,0,:] / yScale[iFd]
+  YN[iFd] = Names[Fields[iFd]][1][:,0,0,:]
 
 if not UseCustomLimits_Y:
 
@@ -93,8 +115,8 @@ if not UseCustomLimits_Y:
   yMax = -np.inf
 
   for iFd in range( nFields ):
-    yMin = min( yMin, YN[iFd].min() )
-    yMax = max( yMax, YN[iFd].max() )
+    yMin = min( yMin, YN[iFd].min() ) / yScale[iFd]
+    yMax = max( yMax, YN[iFd].max() ) / yScale[iFd]
 
 ylim = [ yMin, yMax ]
 
@@ -117,7 +139,7 @@ ax.yaxis.set_tick_params \
   ( which = 'both', top = False, left = True, bottom = False, right = True  )
 
 ax.set_ylim( ylim )
-if UseSemiLogYScale:
+if UseLogScale_Y:
   if( yMin < 0.0 ):
     ax.set_yscale( 'symlog' )
   else:
@@ -131,9 +153,9 @@ color = ['#377eb8', '#ff7f00', '#4daf4a', \
 linesN = np.empty( nFields, object )
 linesK = np.empty( nFields, object )
 for iFd in range( nFields ):
-  linesN[iFd], = ax.plot( [], [], '-', color = color[iFd], \
+  linesN[iFd], = ax.plot( [], [], '.', color = color[iFd], \
                           label = labels[iFd] + ' (N)' )
-  linesK[iFd], = ax.plot( [], [], '-', color = color[iFd+1], \
+  linesK[iFd], = ax.plot( [], [], '.', color = color[iFd+1], \
                           label = labels[iFd] + ' (K)' )
 
 ax.grid()
@@ -180,7 +202,7 @@ def computeCellAverage( Names, nNodes, iFd, nSS ):
         Gmm = np.sum( wq * Names['AF_Gm'][1][iSS,0,0,iLo:iHi] \
                              * SqrtGm[iSS,iLo:iHi] ) / vK
 
-        uK[iSS,iX1] = p / rho**Gmm / yScale
+        uK[iSS,iX1] = p / rho**Gmm
 
       else:
 
@@ -193,6 +215,7 @@ print()
 YK = np.empty( nFields, object )
 for iFd in range( nFields ):
   YK[iFd] = computeCellAverage( Names, nNodes, iFd, nSS )
+  print()
 
 if WriteFile:
 
@@ -209,8 +232,10 @@ if WriteFile:
 
     YKK[1:,1:] = YK[iFd]
 
-    np.savetxt( '{:}_native_{:}.dat'.format( Problem, Fields[iFd] ), \
-                YKK, header = header )
+    fileName = '{:}_native_{:}.dat'.format( Problem, Fields[iFd] )
+    np.savetxt( fileName, YKK, header = header )
+
+    print( '  Wrote file ', fileName )
 
   #os.system( 'rm -rf __pycache__' )
   #exit()
@@ -242,10 +267,10 @@ def UpdateFrame(t):
 
   for iFd in range( nFields ):
 
-    linesN[iFd].set_data( XN, YN[iFd][t] )
+    linesN[iFd].set_data( XN, YN[iFd][t] / yScale[iFd] )
     ret.append( linesN[iFd] )
 
-    linesK[iFd].set_data( XC, YK[iFd][t] )
+    linesK[iFd].set_data( XC, YK[iFd][t] / yScale[iFd] )
     ret.append( linesK[iFd] )
 
   time_text.set_text( r'$t={:.3e}\ \mathrm{{ms}}$'.format( Time[t] ) )

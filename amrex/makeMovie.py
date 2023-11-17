@@ -20,19 +20,17 @@ ID = 'YahilCollapse_XCFC'
 #plotFileDirectory = 'thornado/SandBox/AMReX/'
 plotFileDirectory \
   = HOME + 'Work/Codes/thornado/\
-SandBox/AMReX/Applications/YahilCollapse_XCFC/'
+SandBox/AMReX/Applications/YahilCollapse_XCFC/\
+YahilCollapse_XCFC_amrex_plT_slT/'
 
 # plotFile base name (e.g., Advection1D.plt######## -> Advection1D.plt )
 plotFileBaseName = ID + '.plt'
 
 # Field to plot
-Field   = 'PF_D'
-yScale  = 1.0e0
-yLabel  = r'$\rho\,\left[\mathrm{g\,cm}^{-3}\right]$'
-UseLogScale_Y = True
+Field = 'PF_D'
 
 # Only use every <plotEvery> plotFile
-plotEvery = 10
+plotEvery = 1
 
 # First and last snapshots and number of snapshots to include in movie
 SSi = -1 # -1 -> SSi = 0
@@ -49,9 +47,40 @@ PlotMesh = True
 
 Verbose = True
 
-UseCustomLimits = True
-yMin = 1.0
-yMax = 1.0e15
+if   Field == 'PF_V1':
+
+  UseCustomLimits = False
+  UseLogScale_Y   = False
+  yScale  = 2.99792458e5
+  yLabel = r'$v/c$'
+
+elif Field == 'PF_D':
+
+  UseLogScale_Y   = True
+  UseCustomLimits = False#; yMin = 1.0; yMax = 1.0e15
+  yScale  = 1.0e0
+  yLabel = r'$\rho\,\left[\mathrm{g\,cm}^{-3}\right]$'
+
+elif Field == 'PolytropicConstant':
+
+  UseLogScale_Y   = False
+  UseCustomLimits = False
+  yScale  = 6.0e27 / 7.0e9**1.30
+  yLabel = r'$K/K_{\mathrm{exact}}$'
+
+elif Field == 'AF_P':
+
+  UseLogScale_Y   = True
+  UseCustomLimits = False
+  yScale  = 1.0e0
+  yLabel = r'$p\ \left[\mathrm{erg\,cm}^{-3}\right]$'
+
+else:
+
+  UseLogScale_Y   = False
+  UseCustomLimits = False
+  yScale  = 1.0e0
+  yLabel = ''
 
 MovieRunTime = 10.0 # seconds
 
@@ -96,8 +125,8 @@ for t in range( nSS ):
 
   DataShape, DataUnits, MinVal, MaxVal = ReadHeader( DataFile )
 
-  vmin = min( vmin, MinVal )
-  vmax = max( vmax, MaxVal )
+  vmin = min( vmin, MinVal / yScale )
+  vmax = max( vmax, MaxVal / yScale )
 
 fig, ax = plt.subplots( 1, 1 )
 time_text = ax.text( 0.1, 0.9, '', transform = ax.transAxes, fontsize = 13 )
@@ -115,7 +144,7 @@ def InitializeFrame():
 
 def UpdateFrame( t ):
 
-  print('    {:}/{:}'.format( t+1, nSS ) )
+  print('\r    {:}/{:}'.format( t+1, nSS ), end = '\r' )
 
   time_text.set_text( r'$t={:.16e}\ \mathrm{{ms}}$' \
                       .format( time[t] ) )
@@ -150,6 +179,7 @@ fps = max( 1, nSS / MovieRunTime )
 print( '\n  Making movie' )
 print( '  ------------' )
 anim.save( MovieName, fps = fps, dpi = 300 )
+print()
 
 import os
 os.system( 'rm -rf __pycache__ ' )
