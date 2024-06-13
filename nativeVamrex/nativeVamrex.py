@@ -34,8 +34,6 @@ plotfileDirectory \
   = HOME + 'Work/Codes/thornado/\
 SandBox/AMReX/Applications/YahilCollapse_XCFC/'
 
-figTitle = 'Yahil Collapse, 4096 elements, slT, plT'
-
 # plotfile base name (e.g., Advection1D.plt######## -> Advection1D.plt )
 plotfileBaseName = ID + '.plt'
 
@@ -43,6 +41,15 @@ plotfileBaseName = ID + '.plt'
 Field  = 'PF_V1'
 FieldT = 'PF_V1'
 dataT = np.loadtxt( '{:}_native_{:}.dat'.format( rootName, FieldT ) )
+X1_C = np.copy( dataT[0,1:] )
+X2_C = [np.pi/2.0]
+X3_C = [np.pi]
+LeafElementLocations = []
+for i in range( X1_C.shape[0] ):
+    LeafElementLocations.append \
+      ( np.array( [ X1_C[i], X2_C[0], X3_C[0] ], np.float64 ) )
+
+figTitle = 'Yahil Collapse, Multi-Level Mesh\n{:}'.format( Field )
 
 if   Field == 'PF_V1':
 
@@ -56,7 +63,7 @@ if   Field == 'PF_V1':
 elif Field == 'PF_D':
 
   UseLogScale_Y   = True
-  UseCustomLimits = False#; yMin = 1.0; yMax = 1.0e15
+  UseCustomLimits = True; yMin = 1.0; yMax = 1.0e15
   yScale  = 1.0e0
   yLabel0 = r'$\rho\,\left[\mathrm{g\,cm}^{-3}\right]$'
   yLabel1 = r'$\left|\rho_{\mathrm{a}}-\rho_{\mathrm{t}}\right|/$' \
@@ -127,19 +134,19 @@ plotfileArray \
                   forceChoiceD = False, owD = False, \
                   forceChoiceF = False, owF = False, \
                   UsePhysicalUnits = True, \
-                  MaxLevel = MaxLevel, Verbose = Verbose )
+                  MaxLevel = MaxLevel, Verbose = Verbose, \
+                  LEL = LeafElementLocations )
 if nSS < 0:
   plotfileArray = np.copy( plotfileArray[::plotEvery] )
 else:
   plotfileArray = np.copy( plotfileArray[SSi:SSf+1:plotEvery] )
 
-nSS = plotfileArray.shape[0]
+nSS = min( plotfileArray.shape[0], dataT[1:,0].shape[0] )
 
-X1_C = np.copy( dataT[0,1:] )
-nX   = np.shape( X1_C )[0]
+nX = np.shape( X1_C )[0]
 
-timeT = np.copy( dataT[1::plotEvery,0 ] )
-dataT = np.copy( dataT[1::plotEvery,1:] )
+timeT = np.copy( dataT[1:nSS+1:plotEvery,0 ] )
+dataT = np.copy( dataT[1:nSS+1:plotEvery,1:] )
 timeA = np.empty( timeT.shape, np.float64 )
 dataA = np.empty( dataT.shape, np.float64 )
 dataD = np.empty( dataT.shape, np.float64 )
@@ -165,7 +172,7 @@ for iSS in range( nSS ):
 print()
 print(dataD.min(), dataD.max() )
 
-fig, axs = plt.subplots( 2, 1 )
+fig, axs = plt.subplots( 2, 1, figsize = (10,6) )
 fig.suptitle( '{:}'.format( figTitle ), fontsize = 15 )
 
 time_textA \
@@ -176,6 +183,7 @@ time_textT \
 lineA, = axs[0].plot( [],[], 'k-', lw = 2, label = r'$u_{\mathrm{amrex}}$' )
 lineT, = axs[0].plot( [],[], 'r-', lw = 1, label = r'$u_{\mathrm{thrnd}}$' )
 lineD, = axs[1].plot( [],[], 'k-', lw = 1 )
+
 
 def InitializeFrame():
 
@@ -193,8 +201,8 @@ def UpdateFrame( t ):
 
     print( '\r    Updating frame {:}/{:}'.format( t+1, nSS ), end = '\r' )
 
-    time_textA.set_text( r'$t_{{\mathrm{{amrex}}}}={:.16e}\ \mathrm{{ms}}$' \
-                         .format( timeA[t] ) )
+    time_textA.set_text( r'$t_{{\mathrm{{amrex}}}}={:.16e}\ \mathrm{{ms}}\ {:d}$' \
+                         .format( timeA[t], t ) )
     time_textT.set_text( r'$t_{{\mathrm{{thrnd}}}}={:.16e}\ \mathrm{{ms}}$' \
                          .format( timeT[t] ) )
 
@@ -207,6 +215,10 @@ def UpdateFrame( t ):
     return ret
 
 axs[0].legend( loc = 3, prop = {'size':12} )
+xRef = [ 5.0000e+4, 2.50000e+4, 1.250000e+4, 6.2500e+3, 3.12500e+3, 1.562500e+3, 7.8125e+2, 3.90625e+2, 1.953125e+2 ]
+for i in range( 2 ):
+    for xx in xRef:
+        axs[i].axvline( xx, color = 'b', alpha = 0.3 )
 
 anim = animation.FuncAnimation( fig, UpdateFrame, \
                                 init_func = InitializeFrame, \

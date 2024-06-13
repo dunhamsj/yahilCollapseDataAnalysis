@@ -20,8 +20,7 @@ ID = 'YahilCollapse_XCFC'
 #plotFileDirectory = 'thornado/SandBox/AMReX/'
 plotFileDirectory \
   = HOME + 'Work/Codes/thornado/\
-SandBox/AMReX/Applications/YahilCollapse_XCFC/\
-YahilCollapse_XCFC_amrex_plT_slT/'
+SandBox/AMReX/Applications/YahilCollapse_XCFC/'
 
 # plotFile base name (e.g., Advection1D.plt######## -> Advection1D.plt )
 plotFileBaseName = ID + '.plt'

@@ -56,7 +56,7 @@ ax.plot( X1_C[:,0,0], Data[:,0,0], \
 
 if( useLogYScale ): ax.set_yscale( 'log' )
 
-ax.set_xlabel( xLabel )
+ax.set_xlabel( 'x' )
 ax.set_ylabel( yLabel )
 
 ax.set_xlim( 1.0, 2.0e5 )

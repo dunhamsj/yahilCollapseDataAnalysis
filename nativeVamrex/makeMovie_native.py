@@ -25,7 +25,7 @@ RunTime = 10.0 # seconds
 
 Fields           = [ 'PF_V1' ]
 Dimension        = 'X1'
-SnapshotRange    = [0,625]
+SnapshotRange    = [0,1467]
 plotEvery        = 1
 WriteFile        = True
 
@@ -45,7 +45,7 @@ elif Fields[0] == 'PF_D':
 
 elif Fields[0] == 'PolytropicConstant':
 
-  UseCustomLimits_Y = True; yMin = 1.0 - 1.0e-4; yMax = 1.0 + 1.0e-4
+  UseCustomLimits_Y = True; yMin = 1.0 - 1.0e-2; yMax = 1.0 + 1.0e-2
   UseLogScale_Y     = False
   yScale = [ 6.0e27 / 7.0e9**1.30 ]
   labels = [ r'$K/K_{\mathrm{exact}}$' ]
@@ -64,7 +64,7 @@ else:
   yScale = [ 1.0e0 ]
   labels = Fields
 
-figTitle = 'Yahil Collapse, 8192 elements, plF, slF'
+figTitle = 'Yahil Collapse, 512 elements, Zoomed Grid'
 
 ############################
 
@@ -101,7 +101,6 @@ TimeUnit = Names['Time'][0]
 Time     = Names['Time'][1]
 
 XC   = np.array( Names['X1_C'][1] )
-dX   = np.diff( XC )
 xlim = [ xL, xH ]
 
 YN = np.empty( nFields, object )
@@ -233,12 +232,12 @@ if WriteFile:
     YKK[1:,1:] = YK[iFd]
 
     fileName = '{:}_native_{:}.dat'.format( Problem, Fields[iFd] )
-    np.savetxt( fileName, YKK, header = header )
+    np.savetxt( fileName, YKK, header = header, fmt = '%+.16e' )
 
     print( '  Wrote file ', fileName )
 
-  #os.system( 'rm -rf __pycache__' )
-  #exit()
+  os.system( 'rm -rf __pycache__' )
+  exit()
 
 # Intialize each new frame
 def InitializeFrame():
